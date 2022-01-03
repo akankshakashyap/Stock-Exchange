@@ -1,0 +1,20 @@
+Stockname : Amazon
+Best buy price : 500 
+Best selling price : None
+
+Stockname : IBM
+Best buy price : None 
+Best selling price : 100
+
+Stockname : Amazon
+Best buy price : 500 
+Best selling price : 450
+
+Stockname : Amazon
+Best buy price : 700 
+Best selling price : 450
+
+Stockname : Amazon
+Best buy price : 700 
+Best selling price : 400
+
