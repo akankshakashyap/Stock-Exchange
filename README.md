@@ -85,7 +85,7 @@ Amount in milliseconds.
 
 Example: Sleep 1000
 
-###  Content example of file
+###  Content example of file
 
 Amazon 500 Trading-Global-Inc Buy Limit
 
