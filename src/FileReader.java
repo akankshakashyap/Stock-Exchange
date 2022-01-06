@@ -1,15 +1,11 @@
-import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class FileReader extends Thread{
-    Order curOrder;
     Scanner inputFile;
-
-    FileReader(String filepath) throws FileNotFoundException {
+    FileReader(String filepath) {
         try {
             inputFile = new Scanner(new File(filepath));
         } catch (FileNotFoundException e) {
@@ -17,37 +13,18 @@ public class FileReader extends Thread{
         }
         this.setName(filepath);
     }
-
-    public boolean hasNext() throws FileNotFoundException, InterruptedException, BadDataException {
+    @Override
+    public void run(){
         while (inputFile.hasNextLine()) {
             String temp = inputFile.nextLine();
             String[] arr = temp.split(" ");
             try {
-                if (Objects.equals(arr[0], "Sleep")) Thread.sleep(Integer.parseInt(arr[1])); //general exp
+                if (Objects.equals(arr[0], "Sleep")) Thread.sleep(Integer.parseInt(arr[1]));
                 else {
-                    curOrder = new Order(arr); //custom exp
-                    return true;
+                    StockManager.processOrder(new Order(arr));
                 }
             } catch (Exception e) {
                 System.out.println("Invalid Data");
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    public Order next() {
-        Order temp = curOrder;
-        curOrder = null;
-        return temp;
-    }
-    @Override
-    public void run(){
-        while(true){
-            try {
-                if (!this.hasNext()) break;
-                StockManager.processOrder(this.next());
-            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
