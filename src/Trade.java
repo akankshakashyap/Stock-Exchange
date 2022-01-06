@@ -35,7 +35,9 @@ public class Trade {
     }
 
     public void print() {
-        System.out.println("Trade: " + stockName + "\n" + "Parties involved:\n" + "     " + buyerParty +
-                " (" + buyerPartyPrice + ")\n" + "      " + sellerParty + " (" + sellerPartyPrice + ")\n");
+//        System.out.println(Thread.currentThread().getName());
+        System.out.println("Trade: " + stockName + "\n" + "Parties involved:\n" + "Buyer Party: " + buyerParty +
+                " (" + buyerPartyPrice + ")\n" + "Seller Party: " + sellerParty + " (" + sellerPartyPrice + ")\n"+
+        "Price at which trade took palace: "+ price +"\n");
     }
 }

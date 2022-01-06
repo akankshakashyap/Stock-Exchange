@@ -21,7 +21,9 @@ public class Order {
                 valid = 0;
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BadDataException();
+
         }
         if (valid == 0) {
             throw new BadDataException();

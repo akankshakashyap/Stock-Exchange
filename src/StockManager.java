@@ -8,16 +8,14 @@ public class StockManager {
     private static final ArrayList<Trade> tradeHistory = new ArrayList<Trade>();
     private static final HashMap<String, Quote> quotes = new HashMap<String, Quote>();
 
-    private static void addStock(String stockname) {
+    synchronized private static void addStock(String stockname) {
         HashMap<Boolean, PriorityQueue<Order>> temp = new HashMap<>();
         temp.put(false, new PriorityQueue<>((a, b) -> b.price - a.price)); // buy = 0;
         temp.put(true, new PriorityQueue<>((a, b) -> a.price - b.price)); // sell = 1;
         stockExchange.putIfAbsent(stockname, temp);
     }
 
-    public static void processOrder(@NotNull Order order) throws IOException, InternalError {
-        // order.print();
-        // printSE();
+    synchronized public static void processOrder(@NotNull Order order) throws IOException, InternalError {
         quotes.putIfAbsent(order.stockName, new Quote(order.stockName));
         quotes.get(order.stockName).updateQuote(order);
         addStock(order.stockName);
@@ -38,13 +36,15 @@ public class StockManager {
         if (valid) {
             Trade cur = new Trade(order, cross);
             tradeHistory.add(cur);
-            stockExchange.get(order.stockName).get(!direction).poll();
+            Order temp = stockExchange.get(order.stockName).get(!direction).poll();
+            if(temp == null) System.out.println("hm");
         } else if (!Objects.equals(order.type, "IOC")) {
             stockExchange.get(order.stockName).get(direction).add(order);
         }
+//        printSE();
     }
 
-    public static void printSE() {
+    synchronized public static void printSE() {
         for (Map.Entry<String, HashMap<Boolean, PriorityQueue<Order>>> outside : stockExchange.entrySet()) {
             for (Map.Entry<Boolean, PriorityQueue<Order>> inside : outside.getValue().entrySet()) {
                 System.out.println(outside.getKey() + " " + inside.getKey());

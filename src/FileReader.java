@@ -1,46 +1,36 @@
 import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class FileReader {
-    String[] files;
+public class FileReader extends Thread{
     Order curOrder;
-    int fileIndex; // where in files array we are
     Scanner inputFile;
 
-    FileReader(String @NotNull [] files) throws FileNotFoundException {
-        this.files = files;
-        fileIndex = 0;
+    FileReader(String filepath) throws FileNotFoundException {
         try {
-            inputFile = new Scanner(new File(files[fileIndex]));
+            inputFile = new Scanner(new File(filepath));
         } catch (FileNotFoundException e) {
             System.out.println("Bad File Name!");
         }
+        this.setName(filepath);
     }
 
     public boolean hasNext() throws FileNotFoundException, InterruptedException, BadDataException {
-        if (curOrder != null) return true;
-        while (fileIndex < files.length) {
-            while (inputFile.hasNextLine()) {
-                String temp = inputFile.nextLine();
-                String[] arr = temp.split(" ");
-                try {
-                    if (Objects.equals(arr[0], "Sleep")) Thread.sleep(Integer.parseInt(arr[1])); //general exp
-                    else {
-                        curOrder = new Order(arr); //custom exp
-                        return true;
-                    }
-                } catch (Exception e) {
-                    System.out.println("Invalid Data");
-                }
-            }
+        while (inputFile.hasNextLine()) {
+            String temp = inputFile.nextLine();
+            String[] arr = temp.split(" ");
             try {
-                if (++fileIndex < files.length) inputFile = new Scanner(new File(files[fileIndex]));
-            } catch (FileNotFoundException e) {
-                System.out.println("Bad File Name!");
+                if (Objects.equals(arr[0], "Sleep")) Thread.sleep(Integer.parseInt(arr[1])); //general exp
+                else {
+                    curOrder = new Order(arr); //custom exp
+                    return true;
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid Data");
+                e.printStackTrace();
             }
         }
         return false;
@@ -50,6 +40,17 @@ public class FileReader {
         Order temp = curOrder;
         curOrder = null;
         return temp;
+    }
+    @Override
+    public void run(){
+        while(true){
+            try {
+                if (!this.hasNext()) break;
+                StockManager.processOrder(this.next());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }
